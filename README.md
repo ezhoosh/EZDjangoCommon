@@ -72,3 +72,13 @@ from ez_django_common.custom_responses.enveloper import enveloper_pagination
 def list(self, request, *args, **kwargs):
     return super().list(request, *args, **kwargs)
 ```
+
+And to use custom exceptions handling, you can do this:
+
+``` python
+REST_FRAMEWORK = {
+    ...
+    "EXCEPTION_HANDLER": "ez_django_common.custom_responses.exception.custom_exception_handler",
+    ...
+}
+```
