@@ -18,6 +18,7 @@ setup(
         'EZDjangoCommon'
     ),
     url='https://github.com/ezhoosh/EZDjangoCommon',
+    download_url='https://pypi.python.org/pypi/ez-django-common/',
     author='ezhoosh',
     author_email='ezhoosh@ezhoosh.com',
     keywords="common",
