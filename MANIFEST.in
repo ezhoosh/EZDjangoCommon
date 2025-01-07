@@ -1,0 +1,3 @@
+recursive-include EZDjangoCommon/static *
+recursive-include EZDjangoCommon/templates *
+include README.md
