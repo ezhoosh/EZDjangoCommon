@@ -1,0 +1,3 @@
+recursive-include ez_django_common/static *
+recursive-include ez_django_common/templates *
+include README.md

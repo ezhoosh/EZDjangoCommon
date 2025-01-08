@@ -1,0 +1,62 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block extrastyle %}
+    {% load i18n %}
+    {% get_current_language as LANGUAGE_CODE %}
+<style>
+    @font-face {
+        font-family: 'Ray';
+        src: url('{% static "fonts/IRANYekanWebRegular.ttf" %}') format('truetype');
+    }
+
+    * {
+        font-family: sans-serif Material Symbols Outlined Arial;
+    }
+
+    h2 > span {
+        margin-left: 0 !important;
+        margin-right: auto;
+    }
+</style>
+    {% if LANGUAGE_CODE == 'fa' %}
+        <style>
+            .text-left {
+                text-align: right !important;
+            }
+
+            .date > input {
+                text-align: left !important;
+            }
+
+            .time > input {
+                text-align: left !important;
+            }
+            #site-name{
+                padding-right: 10%;
+            }
+            a > span.text-sm{
+                padding-right: 5%;
+            }
+            .vDateField{
+                text-align: left;
+            }
+            .vTimeField{
+                text-align: left;
+            }
+            #changelist-form > div.bg-gray-50.flex.flex-col.gap-3.mb-4.p-3.rounded-md.lg\:flex-row.dark\:bg-gray-800 > a > span{
+                padding-left: 0;
+                padding-right: 10%;
+            }
+            @media (min-width: 1280px) {
+                #submit-row > div {
+                    left: 0 !important;
+                    right: 18rem !important;
+                }
+
+                #submit-row > div > div > div {
+                    flex-direction: row !important;
+                }
+            }
+        </style>
+    {% endif %}
+{% endblock %}
