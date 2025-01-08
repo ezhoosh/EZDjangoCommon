@@ -9,7 +9,7 @@ def read_me(filename):
 
 
 setup(
-    name='EZDjangoCommon',
+    name='ez-django-common',
     version='1.0.0',
     python_requires='>=3',
     packages=find_packages(),
