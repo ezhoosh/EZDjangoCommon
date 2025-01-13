@@ -1,6 +1,6 @@
 from django.db import models
 from image_uploader_widget.widgets import ImageUploaderWidget
-from unfold.contrib.forms.widgets import WysiwygWidget
+from tinymce.widgets import TinyMCE
 from unfold.contrib.inlines.admin import (
     NonrelatedStackedInline,
     NonrelatedTabularInline,
@@ -38,17 +38,17 @@ class TabularInline(TabularInline):
                 ),
     """
 
-    # @property
-    # def class_name(self):
-    #     return self.__class__.__name__
+    @property
+    def class_name(self):
+        return self.__class__.__name__
 
-    # def get_formset(self, request, obj=None, **kwargs):
-    #     formset = super().get_formset(request, obj, **kwargs)
-    #     formset.class_name = self.class_name
-    #     return formset
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.class_name = self.class_name
+        return formset
 
     formfield_overrides = {
-        models.TextField: {"widget": WysiwygWidget},
+        models.TextField: {"widget": TinyMCE()},
         models.ImageField: {"widget": ImageUploaderWidget},
         models.FileField: {"widget": ImageUploaderWidget},
     }
@@ -93,7 +93,7 @@ class StackedInline(StackedInline):
         return formset
 
     formfield_overrides = {
-        models.TextField: {"widget": WysiwygWidget},
+        models.TextField: {"widget": TinyMCE()},
         models.ImageField: {"widget": ImageUploaderWidget},
         models.FileField: {"widget": ImageUploaderWidget},
     }
@@ -146,7 +146,7 @@ class NonrelatedStackedInline(NonrelatedStackedInline):
         pass
 
     formfield_overrides = {
-        models.TextField: {"widget": WysiwygWidget},
+        models.TextField: {"widget": TinyMCE()},
         models.ImageField: {"widget": ImageUploaderWidget},
         models.FileField: {"widget": ImageUploaderWidget},
     }
@@ -199,7 +199,7 @@ class NonrelatedTabularInline(NonrelatedTabularInline):
         pass
 
     formfield_overrides = {
-        models.TextField: {"widget": WysiwygWidget},
+        models.TextField: {"widget": TinyMCE()},
         models.ImageField: {"widget": ImageUploaderWidget},
         models.FileField: {"widget": ImageUploaderWidget},
     }
