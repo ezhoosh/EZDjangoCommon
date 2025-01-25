@@ -180,6 +180,9 @@ The upload_to function provides a standardized way to handle file uploads in Dja
 from ez_django_common.storages import upload_to
 from django.db import models
 
+def upload_to_path(instance, filename):
+    return upload_to(instance, filename, folder="path")
+
 class MyModel(models.Model):
-    file = models.FileField(upload_to=upload_to, folder='myfolder')
+    file = models.FileField(upload_to=upload_to_path)
 ```
