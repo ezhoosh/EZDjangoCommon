@@ -10,7 +10,7 @@ def read_me(filename):
 
 setup(
     name='ez-django-common',
-    version='1.0.4',
+    version='1.0.5',
     python_requires='>=3',
     packages=find_packages(),
     include_package_data=True,
