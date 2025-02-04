@@ -10,7 +10,7 @@ def read_me(filename):
 
 setup(
     name='ez-django-common',
-    version='1.0.7',
+    version='1.0.8',
     python_requires='>=3',
     packages=find_packages(),
     include_package_data=True,
@@ -34,6 +34,10 @@ setup(
         "kavenegar",
         "drf-spectacular",
         "django-image-uploader-widget",
+        "django-storages",
+        "boto3",
+        "django-webpfield",
+
     ],
     long_description=read_me('README.md'),
     long_description_content_type='text/markdown',
