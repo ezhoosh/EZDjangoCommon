@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from django.db import models
 from django.http import HttpRequest
 from django.urls import reverse
-from image_uploader_widget.widgets import ImageUploaderWidget
+from media_uploader_widget.widgets import MediaUploaderWidget
 from tinymce.widgets import TinyMCE
 from unfold.admin import ModelAdmin, UnfoldAction, UnfoldBooleanSwitchWidget
 
@@ -15,10 +15,10 @@ class BaseModelAdmin(ModelAdmin):
             "widget": TinyMCE(),
         },
         models.FileField: {
-            "widget": ImageUploaderWidget,
+            "widget": MediaUploaderWidget,
         },
         models.ImageField: {
-            "widget": ImageUploaderWidget,
+            "widget": MediaUploaderWidget,
         },
     }
     list_per_page = 30
