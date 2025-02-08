@@ -2,7 +2,7 @@
 {% load i18n static %}
 {% get_current_language as LANGUAGE_CODE %}
 
-<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'fa' %}rtl{% else %}ltr{% endif %}">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
     <head>
         {% block extrastyle %}
         <style>
@@ -20,7 +20,7 @@
                 margin-right: auto;
             }
 
-            {% if LANGUAGE_CODE == 'fa' %}
+            {% if LANGUAGE_BIDI %}
             body {
                 direction: rtl;
                 text-align: right !important;
@@ -56,6 +56,17 @@
                 #submit-row > div > div > div {
                     flex-direction: row !important;
                 }
+            }
+            
+            #header-inner > div > div.flex.items-center.ml-auto > div > div > div:nth-child(2) > nav {
+                position: absolute;
+                left: 0;
+                right: auto;
+            }
+            #header-inner > div > div.flex.items-center.ml-auto > div > div > div:nth-child(1) > div{
+                position: absolute;
+                left: 0;
+                right: auto;
             }
             {% endif %}
         </style>
