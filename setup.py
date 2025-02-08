@@ -10,7 +10,7 @@ def read_me(filename):
 
 setup(
     name='ez-django-common',
-    version='1.0.10',
+    version='1.0.11',
     python_requires='>=3',
     packages=find_packages(),
     include_package_data=True,
@@ -33,6 +33,7 @@ setup(
         "loguru",
         "kavenegar",
         "drf-spectacular",
+        "django-media-uploader-widget",
         "django-image-uploader-widget",
         "django-storages",
         "boto3",
