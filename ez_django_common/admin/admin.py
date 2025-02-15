@@ -6,7 +6,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from media_uploader_widget.widgets import MediaUploaderWidget
 from tinymce.widgets import TinyMCE
-from unfold.admin import ModelAdmin, UnfoldAction, UnfoldBooleanSwitchWidget
+from unfold.admin import ModelAdmin
 
 
 class BaseModelAdmin(ModelAdmin):
@@ -26,12 +26,6 @@ class BaseModelAdmin(ModelAdmin):
     # Display submit button in filters
     list_filter_submit = True
 
-    def get_actions_detail(
-        self, request: HttpRequest, object_id: int = None
-    ) -> List[UnfoldAction]:
-        return self._filter_unfold_actions_by_permissions(
-            request, self._get_base_actions_detail()
-        )
 
     def changeform_view(
         self,
@@ -44,9 +38,6 @@ class BaseModelAdmin(ModelAdmin):
             extra_context = {}
 
         new_formfield_overrides = copy.deepcopy(self.formfield_overrides)
-        new_formfield_overrides.update(
-            {models.BooleanField: {"widget": UnfoldBooleanSwitchWidget}}
-        )
 
         self.formfield_overrides = new_formfield_overrides
 
