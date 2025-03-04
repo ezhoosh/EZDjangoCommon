@@ -4,9 +4,10 @@ Basic building blocks for generic class based views.
 We don't bind behaviour to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
 """
-
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.settings import api_settings
+from rest_framework.exceptions import NotFound
 
 from .response import CustomResponse
 from django.utils.translation import gettext as _
@@ -61,6 +62,31 @@ class CustomListModelMixin:
             + _("retrieved successfully"),
         )
 
+
+
+class ListSingleObjectMixin:
+    """
+    List a queryset and return a single object in an object-like response
+    instead of a list. Raises an error if no object is found or if multiple objects exist.
+    """
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        count = queryset.count()
+        if count == 0:
+            raise NotFound("No object found.")
+        elif count > 1:
+            raise ValidationError("Multiple objects found; expected a single object.")
+
+        # Now that we have confirmed there is exactly one object, retrieve it.
+        instance = queryset.first()
+
+        serializer = self.get_serializer(instance, many=False)
+        return CustomResponse(
+            data=serializer.data,
+            status=status.HTTP_200_OK,
+            message=f"{self.get_serializer().Meta.model._meta.verbose_name} retrieved successfully",
+        )
 
 class CustomRetrieveModelMixin:
     """
