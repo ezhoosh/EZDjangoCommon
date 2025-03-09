@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 #: ez_django_common/custom_responses/exception.py:13
 msgid "please provide correct data."
-msgstr ""
+msgstr "لطفا اطلاعات را به درستی وارد کنید."
 
 #: ez_django_common/custom_responses/exception.py:18
 msgid "please login again"
