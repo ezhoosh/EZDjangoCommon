@@ -10,7 +10,7 @@ def read_me(filename):
 
 setup(
     name='ez-django-common',
-    version='1.0.16',
+    version='1.1.0',
     python_requires='>=3',
     packages=find_packages(),
     include_package_data=True,
@@ -26,7 +26,7 @@ setup(
     platforms=['any'],
     install_requires=[
         "django",
-        "django-unfold",
+        "django-unfold==0.55.3",
         "django-tinymce",
         "django-lifecycle",
         "djangorestframework",
