@@ -11,7 +11,7 @@
                 src: url('{% static "fonts/IRANYekanWebRegular.ttf" %}') format('truetype');
             }
 
-            * {
+            h1,h2,h3,h4,h5,h6,a,label,button,input,select,textarea,div {
                 font-family: Ray;
             }
 
@@ -49,8 +49,10 @@
 
             @media (min-width: 1280px) {
                 #submit-row > div {
-                    left: 0 !important;
-                    right: 18rem !important;
+                    right: 0 !important;
+                    left: 18rem !important;
+                    background-color: rgba(255, 255, 255, 1);
+                    backdrop-filter: blur(1px);
                 }
 
                 #submit-row > div > div > div {
