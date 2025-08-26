@@ -4,75 +4,102 @@
 
 <html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
     <head>
-        {% block extrastyle %}
-        <style>
-            @font-face {
-                font-family: 'Ray';
-                src: url('{% static "fonts/IRANYekanWebRegular.ttf" %}') format('truetype');
-            }
+{% block extrastyle %}
+<style>
+    @font-face {
+        font-family: 'Ray';
+        src: url('{% static "fonts/IRANYekanWebRegular.ttf" %}') format('truetype');
+    }
 
-            h1,h2,h3,h4,h5,h6,a,label,button,input,select,textarea,div {
-                font-family: Ray;
-            }
+    h1,h2,h3,h4,h5,h6,a,label,button,input,select,textarea,div {
+        font-family: Ray;
+    }
 
-            h2 > span {
-                margin-left: 0 !important;
-                margin-right: auto;
-            }
+    h2 > span {
+        margin-left: 0 !important;
+        margin-right: auto;
+    }
 
-            {% if LANGUAGE_BIDI %}
-            body {
-                direction: rtl;
-                text-align: right !important;
-            }
+    {% if LANGUAGE_BIDI %}
+    body {
+        direction: rtl;
+        text-align: right !important;
+    }
 
-            .text-left {
-                text-align: right !important;
-            }
+    .text-left {
+        text-align: right !important;
+    }
 
-            .date > input, .time > input, .vDateField, .vTimeField {
-                text-align: left !important;
-            }
+    .date > input, .time > input, .vDateField, .vTimeField {
+        text-align: left !important;
+    }
 
-            #site-name {
-                padding-right: 10%;
-            }
+    #site-name {
+        padding-right: 10%;
+    }
 
-            a > span.text-sm {
-                padding-right: 5%;
-            }
+    a > span.text-sm {
+        padding-right: 5%;
+    }
 
-            #changelist-form > div.bg-gray-50.flex.flex-col.gap-3.mb-4.p-3.rounded-md.lg\:flex-row.dark\:bg-gray-800 > a > span {
-                padding-left: 0;
-                padding-right: 10%;
-            }
+    #changelist-form > div.bg-gray-50.flex.flex-col.gap-3.mb-4.p-3.rounded-md.lg\:flex-row.dark\:bg-gray-800 > a > span {
+        padding-left: 0;
+        padding-right: 10%;
+    }
 
-            @media (min-width: 1280px) {
-                #submit-row > div {
-                    right: 0 !important;
-                    left: 18rem !important;
-                    background-color: rgba(255, 255, 255, 1);
-                    backdrop-filter: blur(1px);
-                }
+    @media (min-width: 1280px) {
+        #submit-row > div {
+            right: 0 !important;
+            left: 18rem !important;
+            background-color: rgba(255, 255, 255, 1);
+            backdrop-filter: blur(1px);
+        }
 
-                #submit-row > div > div > div {
-                    flex-direction: row !important;
-                }
-            }
-            
-            #header-inner > div > div.flex.items-center.ml-auto > div > div > div:nth-child(2) > nav {
-                position: absolute;
-                left: 0;
-                right: auto;
-            }
-            #header-inner > div > div.flex.items-center.ml-auto > div > div > div:nth-child(1) > div{
-                position: absolute;
-                left: 0;
-                right: auto;
-            }
-            {% endif %}
-        </style>
-        {% endblock %}
+        #submit-row > div > div > div {
+            flex-direction: row !important;
+        }
+    }
+
+    #header-inner > div > div.flex.items-center.ml-auto > div > div > div:nth-child(2) > nav {
+        position: absolute;
+        left: 0;
+        right: auto;
+    }
+    #header-inner > div > div.flex.items-center.ml-auto > div > div > div:nth-child(1) > div{
+        position: absolute;
+        left: 0;
+        right: auto;
+    }
+    {% endif %}
+
+    #submit-row > div {
+        backdrop-filter: blur(4px);
+        background-color: rgba(255, 255, 255, 0.8);
+        border-top: 1px solid #e5e7eb;
+        border-radius: 0 0 0.375rem 0.375rem;
+        padding-bottom: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    html.dark #submit-row > div {
+        background-color: rgba(15, 23, 42, 0.8);
+        border-top: 1px solid #374151;
+        color: #d1d5db;
+    }
+    html[dir="rtl"] .ml-auto {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+
+    }
+    html[dir="rtl"] .material-symbols-outlined {
+    transform: scaleX(-1);
+    }
+
+</style>
+{% endblock %}
+
     </head>
     <body>
         {% block content %}{% endblock %}
