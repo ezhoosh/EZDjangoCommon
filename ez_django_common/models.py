@@ -1,4 +1,5 @@
 from django.conf import settings
+from logging import getLogger
 from django.db import models
 from django.db.models import Manager
 from django.utils import timezone
@@ -6,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django_lifecycle import LifecycleModelMixin
 from googletrans import Translator
 from modeltranslation import translator
+
+logger = getLogger(__name__)
 
 
 class ActiveManager(Manager):
@@ -99,7 +102,7 @@ class BaseModel(LifecycleModelMixin, models.Model):
                         setattr(self, target_field, translated_text)
                 except Exception as e:
                     # Log error but don't fail the save operation
-                    print(
+                    logger.warning(
                         f"Auto-translation error for {self.__class__.__name__}.{target_field}: {str(e)}"
                     )
 
