@@ -171,6 +171,46 @@ from rest_framework.permissions import IsAuthenticated
 permission_classes = [IsAuthenticated, get_custom_model_permissions(['myapp.view_mymodel'])]
 ```
 
+### Auto-Translation (Optional)
+
+The `BaseModel` includes automatic translation functionality for Django models with `django-modeltranslation`. To enable this feature:
+
+1. Install the required dependencies:
+```bash
+pip install googletrans==4.0.0rc1 django-modeltranslation
+```
+
+2. Add to your Django settings:
+```python
+# Enable auto-translation
+AUTO_TRANSLATE_ENABLED = True
+
+# Configure languages (required for translation)
+LANGUAGES = [
+    ('en', 'English'),
+    ('fa', 'Persian'),
+    ('ar', 'Arabic'),
+]
+LANGUAGE_CODE = 'en'  # Default language
+```
+
+3. Use the BaseModel in your models:
+```python
+from ez_django_common.models import BaseModel
+
+class MyModel(BaseModel):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+
+# When you save an instance, missing translations will be automatically generated
+```
+
+**Note**: Auto-translation only works if:
+- `AUTO_TRANSLATE_ENABLED = True` in settings
+- `django-modeltranslation` is installed and configured
+- `googletrans` library is available
+- Your model is registered with `modeltranslation`
+
 ### Utilities
 * Upload_to
 
