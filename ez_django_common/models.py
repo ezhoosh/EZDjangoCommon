@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_lifecycle import LifecycleModelMixin
 from googletrans import Translator
-from modeltranslation import translator
+from modeltranslation.translator import translator
 
 logger = getLogger(__name__)
 
