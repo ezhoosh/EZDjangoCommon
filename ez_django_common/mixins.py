@@ -1,15 +1,65 @@
 """
-DRF ViewSet mixins for declarative caching.
+Mixins for Django models and DRF ViewSets with declarative caching.
 
-These mixins provide automatic caching for list and retrieve actions
-with version-based cache invalidation.
+Provides automatic caching for DRF list/retrieve actions and
+model-level cache invalidation on save/delete.
 """
 
 from functools import wraps
 from django.core.cache import cache
 from rest_framework.response import Response
+from logging import getLogger
+from ez_django_common.utils.caching_utils import get_cache_key_with_version, invalidate_cache
 
-from ez_django_common.utils.caching_utils import get_cache_key_with_version
+logger = getLogger(__name__)
+
+
+# =============================================================================
+# MODEL MIXINS
+# =============================================================================
+
+
+class CacheInvalidationMixin:
+    """
+    Model mixin that automatically invalidates cache version on save() and delete().
+
+    This replaces the need for Django signals by directly hooking into
+    model lifecycle methods.
+
+    Usage:
+        class Product(CacheInvalidationMixin, models.Model):
+            cache_version_key = 'product_list'
+
+            # Your model fields...
+    """
+
+    # Cache version key to invalidate (must be set in subclass)
+    cache_version_key = None
+
+    def save(self, *args, **kwargs):
+        """Override save to invalidate cache after saving."""
+        # Call parent save first
+        result = super().save(*args, **kwargs)
+
+        # Invalidate cache version
+        if self.cache_version_key:
+            invalidate_cache(self.cache_version_key)
+
+        return result
+
+    def delete(self, *args, **kwargs):
+        """Override delete to invalidate cache after deletion."""
+        # Invalidate cache version first (before object is gone)
+        if self.cache_version_key:
+            invalidate_cache(self.cache_version_key)
+
+        # Call parent delete
+        return super().delete(*args, **kwargs)
+
+
+# =============================================================================
+# DRF VIEWSET MIXINS
+# =============================================================================
 
 
 class CachedListMixin:
@@ -47,7 +97,7 @@ class CachedListMixin:
         cached_data = cache.get(cache_key)
         if cached_data is not None:
             if self.cache_hit_message:
-                print(self.cache_hit_message)
+                logger.info(self.cache_hit_message)
             return Response(cached_data)
 
         # Get fresh data
@@ -98,7 +148,7 @@ class CachedRetrieveMixin:
         cached_data = cache.get(cache_key)
         if cached_data is not None:
             if self.cache_hit_message:
-                print(self.cache_hit_message)
+                logger.info(self.cache_hit_message)
             return Response(cached_data)
 
         # Get fresh data
