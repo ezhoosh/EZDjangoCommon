@@ -19,8 +19,7 @@ from django_jalali.admin.widgets import AdminSplitjDateTime, AdminjDateWidget
 
 class BaseModelAdmin(ModelAdmin):
     """
-    Base admin class with automatic boolean field translation.
-    Simply include boolean fields in list_display - translation is handled automatically.
+    Base admin class for common Django admin customizations.
     """
 
     formfield_overrides = {
@@ -51,64 +50,6 @@ class BaseModelAdmin(ModelAdmin):
     list_per_page = 30
     compressed_fields = True
     list_filter_submit = True
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._setup_boolean_translation()
-
-    def _setup_boolean_translation(self):
-        """Automatically create translatable display methods for boolean fields."""
-        if (
-            not hasattr(self, "model")
-            or not self.model
-            or not hasattr(self, "list_display")
-        ):
-            return
-
-        if not self.list_display:
-            return
-
-        # Get boolean fields from model
-        boolean_fields = {
-            field.name: field
-            for field in self.model._meta.fields
-            if isinstance(field, models.BooleanField)
-        }
-
-        if not boolean_fields:
-            return
-
-        # Process list_display
-        list_display = list(self.list_display)
-
-        for i, field_name in enumerate(list_display):
-            if field_name in boolean_fields:
-                method_name = f"__{field_name}_translated"
-
-                # Create the display method
-                self._create_boolean_method(
-                    field_name, method_name, boolean_fields[field_name]
-                )
-
-                # Replace in list_display
-                list_display[i] = method_name
-
-        self.list_display = tuple(list_display)
-
-    def _create_boolean_method(self, field_name: str, method_name: str, field_obj):
-        """Create a boolean display method that returns translatable strings."""
-
-        def display_method(admin_self, obj):
-            value = getattr(obj, field_name)
-            return _("True") if value else _("False")
-
-        # Set admin display properties
-        display_method.boolean = True
-        display_method.short_description = field_obj.verbose_name
-        display_method.__name__ = method_name
-
-        # Bind method to this instance
-        setattr(self, method_name, display_method.__get__(self, self.__class__))
 
     def changeform_view(
         self,
