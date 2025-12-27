@@ -10,7 +10,7 @@ def read_me(filename):
 
 setup(
     name="ez-django-common",
-    version="1.3.7",
+    version="1.4.0",
     python_requires=">=3",
     packages=find_packages(),
     include_package_data=True,
@@ -40,6 +40,15 @@ setup(
         "boto3",
         "django-webpfield",
     ],
+    extras_require={
+        "watchlog": [
+            "opentelemetry-api",
+            "opentelemetry-sdk",
+            "opentelemetry-exporter-otlp",
+            "opentelemetry-instrumentation",
+            "opentelemetry-instrumentation-django",
+        ],
+    },
     long_description=read_me("README.md"),
     long_description_content_type="text/markdown",
     zip_safe=False,
