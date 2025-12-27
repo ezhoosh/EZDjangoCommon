@@ -25,6 +25,29 @@ Or if you want to install from source, you can run this command to install the p
 pip install git+https://github.com/ezhoosh/EZDjangoCommon.git
 ```
 
+### Optional Features
+
+**Watchlog (OpenTelemetry Integration)**
+
+If you want to use the watchlog feature for distributed tracing with OpenTelemetry, install with the `watchlog` extra:
+
+``` bash
+pip install ez-django-common[watchlog]
+```
+
+Or from source:
+
+``` bash
+pip install "ez-django-common[watchlog] @ git+https://github.com/ezhoosh/EZDjangoCommon.git"
+```
+
+This will install the required OpenTelemetry packages:
+- `opentelemetry-api`
+- `opentelemetry-sdk`
+- `opentelemetry-exporter-otlp`
+- `opentelemetry-instrumentation`
+- `opentelemetry-instrumentation-django`
+
 Then add these packages to INSTALLED_APPS:
 
 ``` python
@@ -210,6 +233,41 @@ class MyModel(BaseModel):
 - `django-modeltranslation` is installed and configured
 - `googletrans` library is available
 - Your model is registered with `modeltranslation`
+
+### Watchlog (OpenTelemetry Integration)
+
+The watchlog feature provides distributed tracing capabilities using OpenTelemetry. To use this feature:
+
+1. Install with the watchlog extra:
+```bash
+pip install ez-django-common[watchlog]
+```
+
+2. Add to your Django settings:
+```python
+# Enable watchlog
+USE_WATCHLOG = True
+
+# Configure Watchlog service
+WATCHLOG_SERVICE_NAME = 'my-django-service'
+WATCHLOG_SERVICE_ENDPOINT = 'http://watchlog-agent:3774/apm/YOUR_APP_NAME/v1/traces'
+```
+
+3. The package will automatically instrument your Django application with OpenTelemetry when `USE_WATCHLOG = True`.
+
+4. (Optional) To add request/response tracing middleware, add it to your Django settings:
+```python
+MIDDLEWARE = [
+    # ... other middleware
+    'ez_django_common.middleware.OpenTelemetryMiddleware',  # Only if watchlog extra is installed
+    # ... other middleware
+]
+```
+
+**Important**: 
+- The OpenTelemetry dependencies are only installed when you use the `[watchlog]` extra.
+- If you don't need distributed tracing, you can install the base package without these dependencies.
+- If you set `USE_WATCHLOG = True` or try to use `OpenTelemetryMiddleware` without installing the watchlog extra, you will get a helpful error message telling you to install it.
 
 ### Utilities
 * Upload_to
