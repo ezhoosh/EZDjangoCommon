@@ -6,10 +6,16 @@ model-level cache invalidation on save/delete.
 """
 
 from functools import wraps
-from django.core.cache import cache
-from rest_framework.response import Response
 from logging import getLogger
-from ez_django_common.utils.caching_utils import get_cache_key_with_version, invalidate_cache
+
+from django.core.cache import cache
+from django.db.models.signals import class_prepared, m2m_changed
+from rest_framework.response import Response
+
+from ez_django_common.utils.caching_utils import (
+    get_cache_key_with_version,
+    invalidate_cache,
+)
 
 logger = getLogger(__name__)
 
@@ -21,37 +27,138 @@ logger = getLogger(__name__)
 
 class CacheInvalidationMixin:
     """
-    Model mixin that automatically invalidates cache version on save() and delete().
+    Model mixin that automatically invalidates cache version on save(), delete(),
+    and M2M field changes.
 
     This replaces the need for Django signals by directly hooking into
-    model lifecycle methods.
+    model lifecycle methods and auto-registering M2M signal handlers.
+
+    Supports both single and multiple cache keys:
+    - cache_version_key: str - single cache key (backward compatible)
+    - cache_version_keys: list - multiple cache keys (new feature)
+    - invalidate_cache_on_m2m: bool - auto-handle M2M changes (default: True)
 
     Usage:
-        class Product(CacheInvalidationMixin, models.Model):
-            cache_version_key = 'product_list'
+        # Single key (backward compatible):
+        class Category(CacheInvalidationMixin, models.Model):
+            cache_version_key = 'category_list'
 
-            # Your model fields...
+        # Multiple keys with M2M auto-handling:
+        class Product(CacheInvalidationMixin, models.Model):
+            cache_version_keys = ['product_list', 'product_detail']
+            # invalidate_cache_on_m2m = True  # This is the default
+
+            categories = models.ManyToManyField(...)  # Automatically handled!
+
+        # Disable M2M auto-handling if needed:
+        class SomeModel(CacheInvalidationMixin, models.Model):
+            cache_version_key = 'some_list'
+            invalidate_cache_on_m2m = False  # Opt-out
     """
 
     # Cache version key to invalidate (must be set in subclass)
     cache_version_key = None
+    cache_version_keys = None  # New: support multiple keys
+    invalidate_cache_on_m2m = True  # New: auto-handle M2M changes
+
+    # Class variable to track registered models
+    _m2m_signals_registered = set()
+
+    def __init_subclass__(cls, **kwargs):
+        """
+        Automatically register M2M signal handlers when model class is created.
+        """
+        super().__init_subclass__(**kwargs)
+
+        # Use class_prepared signal to register M2M handlers after model is fully ready
+
+        def register_m2m_signals(sender, **kwargs):
+            # Only process our specific class
+            if sender is not cls:
+                return
+
+            # Check if this model wants M2M cache invalidation
+            if not getattr(cls, "invalidate_cache_on_m2m", True):
+                return
+
+            # Check if already registered
+            if cls in CacheInvalidationMixin._m2m_signals_registered:
+                return
+
+            # Get cache keys
+            cache_keys = cls._get_cache_keys_static(cls)
+            if not cache_keys:
+                return  # No cache keys defined
+
+            # Find all M2M fields and register signals
+            for field in cls._meta.get_fields():
+                if field.many_to_many and not field.auto_created:
+                    # Get the through model
+                    through_model = getattr(cls, field.name).through
+
+                    # Create a signal handler for this M2M field
+                    def make_m2m_handler(keys):
+                        def m2m_handler(sender, instance, action, **kwargs):
+                            if action in ["post_add", "post_remove", "post_clear"]:
+                                for key in keys:
+                                    invalidate_cache(key)
+
+                        return m2m_handler
+
+                    # Connect the signal with a unique dispatch_uid
+                    dispatch_uid = f"cache_invalidation_{cls.__name__}_{field.name}_m2m"
+                    m2m_changed.connect(
+                        make_m2m_handler(cache_keys),
+                        sender=through_model,
+                        dispatch_uid=dispatch_uid,
+                    )
+
+            # Mark as registered
+            CacheInvalidationMixin._m2m_signals_registered.add(cls)
+
+        # Connect to class_prepared signal
+        class_prepared.connect(register_m2m_signals, weak=False)
+
+    @staticmethod
+    def _get_cache_keys_static(cls):
+        """Get all cache keys to invalidate (static method for class-level access)."""
+        keys = []
+
+        # Add multiple keys if defined
+        cache_version_keys = getattr(cls, "cache_version_keys", None)
+        if cache_version_keys:
+            if isinstance(cache_version_keys, (list, tuple)):
+                keys.extend(cache_version_keys)
+            else:
+                keys.append(cache_version_keys)
+
+        # Add single key if defined (and not already in keys)
+        cache_version_key = getattr(cls, "cache_version_key", None)
+        if cache_version_key and cache_version_key not in keys:
+            keys.append(cache_version_key)
+
+        return keys
+
+    def _get_cache_keys(self):
+        """Get all cache keys to invalidate."""
+        return self._get_cache_keys_static(self.__class__)
 
     def save(self, *args, **kwargs):
         """Override save to invalidate cache after saving."""
         # Call parent save first
         result = super().save(*args, **kwargs)
 
-        # Invalidate cache version
-        if self.cache_version_key:
-            invalidate_cache(self.cache_version_key)
+        # Invalidate all cache versions
+        for key in self._get_cache_keys():
+            invalidate_cache(key)
 
         return result
 
     def delete(self, *args, **kwargs):
         """Override delete to invalidate cache after deletion."""
-        # Invalidate cache version first (before object is gone)
-        if self.cache_version_key:
-            invalidate_cache(self.cache_version_key)
+        # Invalidate all cache versions first (before object is gone)
+        for key in self._get_cache_keys():
+            invalidate_cache(key)
 
         # Call parent delete
         return super().delete(*args, **kwargs)
