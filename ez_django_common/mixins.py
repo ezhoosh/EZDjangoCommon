@@ -115,13 +115,15 @@ class CachedListMixin:
     cache_hit_message = None
 
     def list(self, request, *args, **kwargs):
-        """Override list to add caching."""
+        """Override list to add caching with language support."""
         if not self.cache_key_prefix or not self.cache_version_key:
             # If not configured, fallback to default behavior
             return super().list(request, *args, **kwargs)
 
-        # Build cache key from query params
+        # Build cache key from query params AND language
         query_params = dict(request.query_params)
+        query_params["lang"] = request.LANGUAGE_CODE
+        
         cache_key = get_cache_key_with_version(
             base_key=self.cache_key_prefix,
             version_key=self.cache_version_key,
