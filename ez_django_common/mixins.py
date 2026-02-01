@@ -173,6 +173,7 @@ class CachedRetrieveMixin:
         # Build cache key from pk and query params
         pk = kwargs.get("pk")
         query_params = dict(request.query_params)
+        query_params["lang"] = request.LANGUAGE_CODE
         query_params["pk"] = pk
 
         cache_key = get_cache_key_with_version(
